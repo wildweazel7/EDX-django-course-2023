@@ -99,7 +99,6 @@ def enroll(request, course_id):
         Enrollment.objects.create(user=user, course=course, mode='honor')
         course.total_enrollment += 1
         course.save()
-
     return HttpResponseRedirect(reverse(viewname='onlinecourse:course_details', args=(course.id,)))
 
 # <HINT> Create a submit view to create an exam submission record for a course enrollment,
@@ -111,14 +110,12 @@ def enroll(request, course_id):
          # Redirect to show_exam_result with the submission id
 def submit(request, course_id):
   if request.method == "POST":
-    username = request.POST['username']
+    username = request.user
     cur_enrollment = Enrollment.objects.get(user=username, course=course_id)
     cur_submission = Submission.objects.create(enrollment=cur_enrollment)
     submitted_answers = extract_answers(request)
     for single_answer in submitted_answers:
-        cur_choice = Choice.objects.create(question=single_answer['choice_id'], choice_text=single_answer['value'])
-        cur_choice.save()
-    cur_submission.save()
+        cur_choice = Choice.objects.create(submission=cur_submission ,choice_text=single_answer)
     return HttpResponseRedirect(reverse(viewname='onlinecourse:show_exam_result', args=(cur_submission.id,)))
 
 # <HINT> A example method to collect the selected choices from the exam form from the request object
