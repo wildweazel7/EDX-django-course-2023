@@ -95,9 +95,6 @@ class Enrollment(models.Model):
 
 
 
-
-
-
 # <HINT> Create a Question Model with:
 class Question(models.Model):
     # Used to persist question content for a course
