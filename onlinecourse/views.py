@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.views import generic
 from django.contrib.auth import login, logout, authenticate
 import logging
+
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 # Create your views here.
@@ -140,12 +141,22 @@ def extract_answers(request):
         # Calculate the total score
 def show_exam_result(request, course_id, submission_id):
     context ={}
-    questions = []
+    questions_answered = []
+    grade = 0
+    count = 0
+    score = 0
     get_courses = get_object_or_404(Course, pk=course_id)
     get_submisson = get_object_or_404(Submission, pk=submission_id)
     for selected_choice in get_submisson.choices.all():
-      questions.append(selected_choice.id)
-    context['grade'] = 100
+      questions_answered.append(selected_choice.id)
+    for count_questions in get_courses.question_set.all():
+        count += 1
+        if count_questions.is_get_score(questions_answered):
+            score +=  count_questions.grade 
+    grade = score
+    context['grade']=grade
+    context['course']=get_courses
+    context['selected_ids']=questions_answered
     return render(request, 'onlinecourse/exam_result_bootstrap.html', context)
     
     
